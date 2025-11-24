@@ -24,7 +24,8 @@ Geef ofwel een cookie op, ofwel de een tuple van (key-file-path, cert-file-path)
 OpM: Proxies moeten met environment variables gezet worden
 
 """
-
+from qgis.core import (
+    QgsProcessingFeedback,)
 
 def ensure_module(package_name, import_name=None):
     feedback.pushInfo("ensure_module")
