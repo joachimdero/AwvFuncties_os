@@ -24,23 +24,19 @@ Geef ofwel een cookie op, ofwel de een tuple van (key-file-path, cert-file-path)
 OpM: Proxies moeten met environment variables gezet worden
 
 """
-from qgis.core import QgsProcessingFeedback as feedback
+
 
 def ensure_module(package_name, import_name=None):
-    feedback.pushInfo("ensure_module")
     if import_name is None:
         import_name = package_name
     try:
         return importlib.import_module(import_name)
     except ModuleNotFoundError:
-        try:
-
-            feedback.pushInfo(f"try install pip {package_name}")
+        try
             subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
             return importlib.import_module(import_name)
         except Exception as e:
-            feedback.pushInfo(f"Kan module {import_name} niet installeren." )
-            feedback.pushInfo(f"e {e} " )
+            return f"e:{e}"
             raise RuntimeError(
                 f"Kan module {import_name} niet installeren. "
 
