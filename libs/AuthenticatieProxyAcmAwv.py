@@ -27,21 +27,27 @@ OpM: Proxies moeten met environment variables gezet worden
 
 
 def ensure_module(package_name, import_name=None):
+    feedback.pushInfo("ensure_module")
     if import_name is None:
         import_name = package_name
     try:
         return importlib.import_module(import_name)
     except ModuleNotFoundError:
         try:
+
+            feedback.pushInfo(f"try install pip {package_name}")
             subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
             return importlib.import_module(import_name)
         except Exception as e:
+            feedback.pushInfo(f"Kan module {import_name} niet installeren." )
+            feedback.pushInfo(f"e {e} " )
             raise RuntimeError(
                 f"Kan module {import_name} niet installeren. "
 
                 f"Installeer handmatig via: pip install {package_name}\n"
                 f"Fout: {e}"
             )
+
 
 jwt = ensure_module("PyJWT", "jwt")
 
