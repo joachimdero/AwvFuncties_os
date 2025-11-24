@@ -9,10 +9,13 @@
 # Licence:     <your licence>
 # -------------------------------------------------------------------------------
 import datetime
+import importlib
 import json
+import subprocess
+import sys
 import uuid
 from functools import lru_cache
-import jwt
+
 import requests
 """
 Prepareert een sessie (authenticatie)
@@ -22,6 +25,25 @@ OpM: Proxies moeten met environment variables gezet worden
 
 """
 
+
+def ensure_module(package_name, import_name=None):
+    if import_name is None:
+        import_name = package_name
+    try:
+        return importlib.import_module(import_name)
+    except ModuleNotFoundError:
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
+            return importlib.import_module(import_name)
+        except Exception as e:
+            raise RuntimeError(
+                f"Kan module {import_name} niet installeren. "
+
+                f"Installeer handmatig via: pip install {package_name}\n"
+                f"Fout: {e}"
+            )
+
+jwt = ensure_module("PyJWT", "jwt")
 
 def prepareSession(cookie=None, cert=None):
     session = requests.Session()
@@ -40,6 +62,7 @@ def prepareSession(cookie=None, cert=None):
 
 @lru_cache(maxsize=1)
 def get_access_token(awv_key):
+    import jwt
     with open(awv_key, 'r') as file:
         config = json.load(file)
     client_id = config.get('clientid')
