@@ -26,39 +26,35 @@ OpM: Proxies moeten met environment variables gezet worden
 """
 
 
-def ensure_module(package_name, import_name=None):
-    if import_name is None:
-        import_name = package_name
+
+# utils_feedback.py
+def feedback_fn(bericht, feedback=None):
+    if feedback:  # QGIS feedback object
+        try:
+            feedback.pushInfo(bericht)
+            return
+        except AttributeError:
+            pass
     try:
-        return importlib.import_module(import_name)
-    except ModuleNotFoundError:
-        try
-            subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-            return importlib.import_module(import_name)
-        except Exception as e:
-            return f"e:{e}"
-            raise RuntimeError(
-                f"Kan module {import_name} niet installeren. "
-
-                f"Installeer handmatig via: pip install {package_name}\n"
-                f"Fout: {e}"
-            )
+        from arcpy import AddMessage  # ArcGIS
+        AddMessage(bericht)
+    except ImportError:
+        print(bericht)  # Standalone
 
 
-jwt = ensure_module("PyJWT", "jwt")
 
-def prepareSession(cookie=None, cert=None):
+def prepareSession(cookie=None, cert=None, feedback=None):
     session = requests.Session()
     if cookie is not None:
         session.headers.update({'Cookie': 'acm-awv={}'.format(cookie),
                                 ##                  'Content-type': 'application/json',
                                 })
-        print(("authenticatie met cookie : %s" % cookie))
+        feedback_fn(f"Authenticatie met cookie: {cookie}", feedback)
         return session
 
     if cert is not None:
         session.cert = cert
-        print(("authenticatie met cert : %s" % str(cert)))
+        feedback_fn(f"Authenticatie met cert: {cert}", feedback)
         return session
 
 
