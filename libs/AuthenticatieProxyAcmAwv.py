@@ -9,10 +9,7 @@
 # Licence:     <your licence>
 # -------------------------------------------------------------------------------
 import datetime
-import importlib
 import json
-import subprocess
-import sys
 import uuid
 from functools import lru_cache
 
