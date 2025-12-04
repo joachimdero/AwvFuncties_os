@@ -44,8 +44,7 @@ def request_ls2_puntlocatie(locaties, omgeving="apps", zoekafstand=2, crs=31370,
         i += 1
         if response.status_code == 401:
             Feedback.feedback_fn(f"status_code: {response.status_code}")
-            Feedback.feedback_fn("authorisatie mislukt: is cookie nog geldig?")
-            sys.exit()
+            raise Exception("Autorisatie mislukt (401). Controleer je cookie.")
         elif response.status_code == 200:
             Feedback.feedback_fn("authorisatie gelukt")
             response_json = response.json()
