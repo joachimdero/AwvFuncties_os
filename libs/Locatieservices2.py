@@ -33,9 +33,7 @@ F_TYPE = {
 
 def request_ls2_puntlocatie(locaties, omgeving="apps", zoekafstand=2, crs=31370, session=None, gebruik_kant_van_de_weg='false', feedback=None):
     Feedback.feedback_fn('testbericht2', feedback)
-    response_json = None
     URL = f'https://{omgeving}.mow.vlaanderen.be/locatieservices2/rest/puntlocatie/batch?crs={crs}&zoekafstand={zoekafstand}&gebruikKantVanDeWeg={gebruik_kant_van_de_weg}'
-
 
     jsonArgs = json.dumps(locaties).encode('utf8')
     session.headers.update({'Content-Type': 'application/json', 'accept': 'application/json'})
@@ -51,10 +49,10 @@ def request_ls2_puntlocatie(locaties, omgeving="apps", zoekafstand=2, crs=31370,
         elif response.status_code == 200:
             Feedback.feedback_fn("authorisatie gelukt")
             response_json = response.json()
-            continue
+            return response_json
         else:
             Feedback.feedback_fn(f"probleem bij opvragen: status {response.status_code}")
             Feedback.feedback_fn(f'response:{str(response)[:200]}')
             Feedback.feedback_fn(f'jsonArgs:{jsonArgs[:2]}')
 
-        return response_json
+        return None
