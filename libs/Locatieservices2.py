@@ -52,6 +52,6 @@ def request_ls2_puntlocatie(locaties, omgeving="apps", zoekafstand=2, crs=31370,
         else:
             Feedback.feedback_fn(f"probleem bij opvragen: status {response.status_code}", feedback)
             Feedback.feedback_fn(f'response:{str(response)[:200]}', feedback)
-            Feedback.feedback_fn(f'jsonArgs:{jsonArgs[:2]}', feedback)
+            Feedback.feedback_fn(f'jsonArgs:{jsonArgs[:200]}', feedback)
 
         return None
