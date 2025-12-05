@@ -32,16 +32,12 @@ F_TYPE = {
 }
 
 def request_ls2_puntlocatie(locaties, omgeving="apps", zoekafstand=2, crs=31370, session=None, gebruik_kant_van_de_weg='false', feedback=None):
-    Feedback.feedback_fn('testbericht2', feedback)
     URL = f'https://{omgeving}.mow.vlaanderen.be/locatieservices2/rest/puntlocatie/batch?crs={crs}&zoekafstand={zoekafstand}&gebruikKantVanDeWeg={gebruik_kant_van_de_weg}'
-
     jsonArgs = json.dumps(locaties).encode('utf8')
     session.headers.update({'Content-Type': 'application/json', 'accept': 'application/json'})
     response = session.post(URL, jsonArgs)
 
-    i = 0
-    while i < 4:
-        i += 1
+    for i in range(4): # retry mechanisme bij timeouts of server errors
         if response.status_code == 200:
             Feedback.feedback_fn("authorisatie gelukt", feedback)
             response_json = response.json()
