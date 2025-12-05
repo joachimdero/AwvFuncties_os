@@ -31,7 +31,7 @@ F_TYPE = {
     'wegnummer': ["TEXT", 10],
 }
 
-def request_ls2_puntlocatie(locaties, omgeving="apps", zoekafstand=2, crs=31370, session=None, gebruik_kant_van_de_weg='false', feedback=None):
+def request_ls2_puntlocatie(locaties, omgeving="apps", zoekafstand=2, crs=31370, session=None, gebruik_kant_van_de_weg='false'):
     URL = f'https://{omgeving}.mow.vlaanderen.be/locatieservices2/rest/puntlocatie/batch?crs={crs}&zoekafstand={zoekafstand}&gebruikKantVanDeWeg={gebruik_kant_van_de_weg}'
     jsonArgs = json.dumps(locaties).encode('utf8')
     session.headers.update({'Content-Type': 'application/json', 'accept': 'application/json'})
@@ -39,15 +39,11 @@ def request_ls2_puntlocatie(locaties, omgeving="apps", zoekafstand=2, crs=31370,
 
     for i in range(4): # retry mechanisme bij timeouts of server errors
         if response.status_code == 200:
-            Feedback.feedback_fn("authorisatie gelukt", feedback)
             response_json = response.json()
             return response_json
         elif response.status_code == 401:
-            Feedback.feedback_fn(f"status_code: {response.status_code}", feedback)
             raise Exception("Autorisatie mislukt (401). Controleer je cookie.")
         else:
-            Feedback.feedback_fn(f"probleem bij opvragen: status {response.status_code}", feedback)
-            Feedback.feedback_fn(f'response:{str(response)[:200]}', feedback)
-            Feedback.feedback_fn(f'jsonArgs:{jsonArgs[:200]}', feedback)
-            raise Exception(f"Fout bij opvragen van locatieservices2 puntlocatie: {response.status_code} {response.reason} {response.text}")
+            raise Exception(f"Fout bij opvragen van locatieservices2 puntlocatie: response.status_code: {response.status_code}, "
+                            f"response.reason: {response.reason}, response.text: {response.text}")
 
